@@ -62,12 +62,93 @@ swapon /dev/mapper/volume-swap
 NOW Install ARCH In The Installer.
 
 
+Before REBOOT CHROOT.
+
+blkid -s UUID -o value /dev/sda2 > ~/uuid
+blkid
+
+edit /etc/fstab
+/dev/mapper/volume-swap    swap    swap    defaults    0 0
+/dev/mapper/volume-root    /       ext4    rw,default  0 1
+
+edit /etc/crypttab
+volume    UUID=<UUID>    none    luks
 
 
 
+Edit the /etc/mkinitcpio.conf. Look for the HOOKS variable and move keyboard to before the filesystems and add encrypt and lvm2 after keyboard. Like: ADD drm md_mod sd_mod dm-crypt to modules 
+
+HOOKS="base udev autodetect modconf block keyboard encrypt lvm2 filesystems fsck"
+Regenerate the initramfs:
+
+mkinitcpio -p linux
+Install a bootloader:
+mount /dev/sda1 /boot/efi
+
+bootctl --path=/boot/ install
+
+/boot/loader/entries/arch.conf
+
+title Arch Linux
+linux /vmlinuz-linux
+initrd /initramfs-linux.img
+options cryptdevice=UUID={UUID}:volume root=/dev/mapper/volume-root quiet rw
+cryptroot=UUID=<UUID> cryptdm=volume
 
 
+Setup the LUKS partition and activate the LVs:
+cryptsetup luksOpen /dev/sda2
+vgchange -ay
 
+ADD BLACKARCH
+Run https://blackarch.org/strap.sh as root and follow the instructions.
+
+curl -O https://blackarch.org/strap.sh
+The SHA1 sum should match: 9f770789df3b7803105e5fbc19212889674cd503 strap.sh
+
+sha1sum strap.sh
+
+chmod +x strap.sh
+
+sudo ./strap.sh
+
+Install torctl
+
+sudo pacman -S torctl
+To find out your current IP, do:
+
+torctl ip
+To start Tor as a transparent proxy:
+
+sudo torctl start
+To check the status of services:
+
+torctl status
+If you want to change the IP on the Tor network:
+
+sudo torctl chngid
+To work with the Internet directly, without Tor, run:
+
+sudo torctl stop
+To change the MAC address on all network interfaces, run the command:
+
+sudo torctl chngmac
+To recover the original MAC addresses:
+
+sudo torctl rvmac
+The following command will add the torctl service to startup, that is, immediately after turning on the computer, all traffic will be sent through Tor:
+
+sudo systemctl enable torctl-autostart.service
+To remove a service from startup, do:
+
+sudo systemctl disable torctl-autostart.service
+You can also enable automatic memory cleaning every time you turn off the computer:
+
+sudo systemctl enable torctl-autowipe.service
+To disable this function:
+
+sudo systemctl disable torctl-autowipe.service
+This script knows about the existence of IPv6 traffic and successfully blocks it. DNS queries are redirected through Tor.
 
 
  
