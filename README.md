@@ -92,6 +92,10 @@ options cryptdevice=UUID={UUID}:volume root=/dev/mapper/volume-root quiet rw
 cryptroot=UUID=<UUID> cryptdm=volume
 
 SECURITY OPTIONS TO PASS TO THE KERNEL CMD = mitigations=auto mds=full,nosmt page_poison=1 vsyscall=none mce=0 slab_nomerge block.events_dfl_poll_msecs=1000 ipv6.disable=0 audit=1 apparmor=1 security=apparmor
+ l1tf=full,force vbox
+ mds=full,nosmt mitigations=auto,nosmt nosmt=force
+
+ 
  
  Other For ME ......
  options root=ZFS=zroot/ROOT/Arch rw  spl.spl_hostid=0x5e2a4d6f rootfstype=zfs rootflags=rw,noatime,xattr,posixacl resume=UUID=77a30146-9b98-4ca4-8920-427b84696fe0 nowatchdog nmi_watchdog=0 psmouse.synaptics_intertouch=0 scsi_mod.use_blk_mq=0 libahci.ignore_sss=1 loglevel=2 i915.fastboot=1 mitigations=auto mds=full,nosmt page_poison=1 vsyscall=none mce=0 slab_nomerge block.events_dfl_poll_msecs=1000 ipv6.disable=0 audit=1 net.ifnames=0 zswap.enabled=1 zswap.compressor=lz4 zswap.max_pool_percent=20 zswap.zpool=z3fold zram.num_devices=4 zram_num.devices=4 apparmor=1 security=apparmor
