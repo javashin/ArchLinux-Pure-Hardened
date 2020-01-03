@@ -59,6 +59,17 @@ NOW Install ARCH In The Installer.
 
 
 Before REBOOT CHROOT.
+#normal-Chroot
+mount --rbind /dev dev 
+mount --make-rslave dev
+mount -t proc /proc proc
+mount --rbind /sys sys
+mount --make-rslave sys
+mount --rbind /tmp tmp
+umount  /sys/firmware/efi/efivars/
+mount -t efivarfs none sys/firmware/efi/efivars/
+cp /etc/resolv.conf etc
+
 
 blkid -s UUID -o value /dev/sda2 > ~/uuid
 blkid
