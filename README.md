@@ -4,10 +4,6 @@ Needs / Deps 4 This Task .
 
 https://sourceforge.net/projects/revenge-installer/
 
-
-
-options root=ZFS=zroot/ROOT/Arch rw  spl.spl_hostid=0x5e2a4d6f rootfstype=zfs rootflags=rw,noatime,xattr,posixacl resume=UUID=77a30146-9b98-4ca4-8920-427b84696fe0 nowatchdog nmi_watchdog=0 psmouse.synaptics_intertouch=0 scsi_mod.use_blk_mq=0 libahci.ignore_sss=1 loglevel=2 i915.fastboot=1 mitigations=auto mds=full,nosmt page_poison=1 vsyscall=none mce=0 slab_nomerge block.events_dfl_poll_msecs=1000 ipv6.disable=0 audit=1 net.ifnames=0 zswap.enabled=1 zswap.compressor=lz4 zswap.max_pool_percent=20 zswap.zpool=z3fold zram.num_devices=4 zram_num.devices=4 apparmor=1 security=apparmor
-
 pacman -S apparmor haveged lvm2 cryptsetup e2fsprogs parted ; systemctl enable --now apparmor; systemctl enable --now haveged 
 shred -v -n1 /dev/sdX Or Optional: Overwrite LUKS Partition with Random Data
 
@@ -90,15 +86,27 @@ bootctl --path=/boot/ install
 /boot/loader/entries/arch.conf
 
 title Arch Linux
-linux /vmlinuz-linux
-initrd /initramfs-linux.img
+linux /vmlinuz-linux-hardened
+initrd /initramfs-linux-hardened.img
 options cryptdevice=UUID={UUID}:volume root=/dev/mapper/volume-root quiet rw
 cryptroot=UUID=<UUID> cryptdm=volume
 
+SECURITY OPTIONS TO PASS TO THE KERNEL CMD = mitigations=auto mds=full,nosmt page_poison=1 vsyscall=none mce=0 slab_nomerge block.events_dfl_poll_msecs=1000 ipv6.disable=0 audit=1 apparmor=1 security=apparmor
+ 
+ Other For ME ......
+ options root=ZFS=zroot/ROOT/Arch rw  spl.spl_hostid=0x5e2a4d6f rootfstype=zfs rootflags=rw,noatime,xattr,posixacl resume=UUID=77a30146-9b98-4ca4-8920-427b84696fe0 nowatchdog nmi_watchdog=0 psmouse.synaptics_intertouch=0 scsi_mod.use_blk_mq=0 libahci.ignore_sss=1 loglevel=2 i915.fastboot=1 mitigations=auto mds=full,nosmt page_poison=1 vsyscall=none mce=0 slab_nomerge block.events_dfl_poll_msecs=1000 ipv6.disable=0 audit=1 net.ifnames=0 zswap.enabled=1 zswap.compressor=lz4 zswap.max_pool_percent=20 zswap.zpool=z3fold zram.num_devices=4 zram_num.devices=4 apparmor=1 security=apparmor
 
 Setup the LUKS partition and activate the LVs:
 cryptsetup luksOpen /dev/sda2
 vgchange -ay
+
+arch-chroot 
+or
+
+#########
+
+
+
 
 ADD BLACKARCH
 Run https://blackarch.org/strap.sh as root and follow the instructions.
